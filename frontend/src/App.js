@@ -1,23 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from 'react';
+import ResourceList from './components/ResourceList';
+import ResourceForm from './components/ResourceForm';
+import { getResources, createResource, deleteResource } from './api/api';
 
 function App() {
+  const [resources, setResources] = useState([]);
+
+  useEffect(() => {
+    const fetchResources = async () => {
+      const data = await getResources();
+      setResources(data);
+    };
+
+    fetchResources();
+  }, []);
+
+  const handleCreateResource = async (resourceData) => {
+    const newResource = await createResource(resourceData);
+    setResources([...resources, newResource]);
+  };
+
+  const handleDeleteResource = async (id) => {
+    await deleteResource(id);
+    setResources(resources.filter(resource => resource._id !== id));
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Resources</h1>
+      <ResourceList resources={resources} onDelete={handleDeleteResource} />
+      <ResourceForm onCreate={handleCreateResource} />
     </div>
   );
 }

@@ -1,25 +1,33 @@
+require('dotenv').config();
 
-const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
-
+const express = require("express");
 const app = express();
+const mongoose = require('mongoose');
 
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-})
-
-const port = process.env.PORT || 8082;
-
-app.listen(port, () => console.log(`Listening on port ${port}`))
-
-mongoose.connect('mongodb://localhost/myapp', {
+// MongoDB connection
+mongoose.connect('mongodb+srv://aresemaworkneh:8jryzT8r62tpvI16@cluster1.a4ezcte.mongodb.net', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-});
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-  console.log('Connected to MongoDB');
+})
+.then(() => {
+  console.log(`MongoDB connected successfully`);
+  app.listen(process.env.PORT, () => {
+    console.log(`Server is running on port: ${process.env.PORT}`);
+  });
+})
+.catch((error) => {
+  console.error(`MongoDB Connection Error: ${error}`);
 });
 
+
+app.use(cors());
+app.use(express.json());
+app.use(require("./routes/record"));
+
+// Assuming dbo.connectToServer is responsible for connecting to the database
+const dbo = require("./db/conn");
+dbo.connectToServer(function (err) {
+  if (err) console.error(err);
+  console.log(`Server is running on port: ${process.env.PORT}`);
+});
