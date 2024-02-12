@@ -38,3 +38,4 @@ app.listen(port, () => {
 
 const apiRouter = require('./routes/api');
 app.use('/api', apiRouter);
+app.use('/api/metrics', apiRouter);
